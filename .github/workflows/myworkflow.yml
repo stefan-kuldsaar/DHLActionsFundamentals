@@ -1,10 +1,36 @@
 name: MyWorkflow
 
-on: [push]
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
-  build:
+  validate:
+    name: Validate repository
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
-      - run: echo "Hello World"
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Show project information
+        run: |
+          echo "Repository: ${{ github.repository }}"
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Event: ${{ github.event_name }}"
+          echo "Current directory: $(pwd)"
+          echo "Top-level files:"
+          ls -la
+
+      - name: Basic validation
+        run: |
+          echo "This workflow is running on GitHub Actions."
+          echo "The repository is ready for the next automation step."
+          git --no-pager status --short
